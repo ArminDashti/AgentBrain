@@ -53,3 +53,4 @@ coverage/
 *.7z
 graphify-out/
 .gitnexus/
+!.env.example
