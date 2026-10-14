@@ -34,3 +34,23 @@ mcp/node_modules/typescript/lib/typescript.js
 webui/node_modules/@esbuild/win32-x64/esbuild.exe
 webui/node_modules/typescript/lib/_tsc.js
 webui/node_modules/typescript/lib/typescript.js
+
+# hygiene
+node_modules/
+dist/
+build/
+bin/
+obj/
+.venv/
+__pycache__/
+*.log
+logs/
+.env.*
+*.tsbuildinfo
+.cache/
+coverage/
+*.zip
+*.7z
+graphify-out/
+.gitnexus/
+!.env.example
