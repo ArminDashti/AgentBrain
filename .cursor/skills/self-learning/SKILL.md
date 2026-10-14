@@ -5,8 +5,6 @@ description: >-
 metadata:
   version: 1.0
   author: kulaxyz
-  tags: []
-  last_updated: "2026-10-08 22:11:19"
   uuid: 7ddbd178-64fe-48c3-8db1-09ba6c3e59dc
 ---
 # Self-learning: harvest golden paths into skills
