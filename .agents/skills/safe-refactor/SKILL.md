@@ -5,10 +5,9 @@ description: >-
 metadata:
   version: 1.0.0
   author: "Armin Dashti"
-  category: 
   tags: []
-  last_updated: "2026-09-10 13:33:02"
-  uuid: 63469234-084e-4469-8165-656c7353a9b1
+  last_updated: "2026-10-15 10:03:44"
+  uuid: 073c529f-b8f8-4b00-8bb2-52d6497a1561
 ---
 # Safe refactor
 
