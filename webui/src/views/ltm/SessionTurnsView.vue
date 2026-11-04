@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
-import { RouterLink, useRoute } from 'vue-router'
+import { useRoute } from 'vue-router'
 import { fmtNum, getSessionTurns } from '@/lib/api'
 
 const route = useRoute()
@@ -20,21 +20,7 @@ onMounted(async () => {
 
 <template>
   <div>
-    <div class="flex items-center gap-3">
-      <h1 class="text-2xl font-semibold">Turns</h1>
-      <nav class="ml-auto flex gap-3 text-sm">
-        <RouterLink class="text-muted-foreground hover:text-foreground" :to="`/sessions/${uuid}`">
-          Overview
-        </RouterLink>
-        <RouterLink
-          class="text-muted-foreground hover:text-foreground"
-          :to="`/sessions/${uuid}/thinking`"
-        >
-          Thinking
-        </RouterLink>
-        <RouterLink class="text-primary" :to="`/sessions/${uuid}/turns`">Turns</RouterLink>
-      </nav>
-    </div>
+    <h1 class="text-2xl font-semibold">Turns</h1>
     <p v-if="error" class="mt-4 text-red-400">{{ error }}</p>
     <div v-else class="mt-6 space-y-3">
       <article

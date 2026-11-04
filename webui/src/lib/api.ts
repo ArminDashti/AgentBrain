@@ -1,28 +1,7 @@
 const TOKEN_KEY = 'agent_brain_token'
 
-export type KnowledgeKind = 'general_knowledge' | 'expertise' | 'resolved_issues' | 'task_guide'
-export type StoreTarget = 'sqlite' | 'qdrant' | 'both'
-export type SearchMode = 'structured' | 'semantic' | 'hybrid'
-
-export type KnowledgeItem = {
-  id: string
-  kind: KnowledgeKind | string
-  title: string
-  body: string
-  tags: string[]
-  metadata: Record<string, unknown>
-  in_sqlite: boolean
-  in_qdrant: boolean
-  created_at: string
-  updated_at: string
-  score?: number
-}
-
 export type StatsResponse = {
-  total_knowledge: number
-  by_kind: Record<string, number>
   session_count: number
-  recent_knowledge: KnowledgeItem[]
 }
 
 function apiBase(): string {
@@ -63,23 +42,14 @@ export async function login(username: string, password: string) {
   return data
 }
 
-export function listKnowledge(kind?: string, q = '') {
-  const params = new URLSearchParams()
-  if (kind) params.set('kind', kind)
-  if (q) params.set('q', q)
-  const qs = params.toString() ? `?${params}` : ''
-  return request<{ items: KnowledgeItem[] }>(`/api/v1/knowledge${qs}`)
-}
-
-export function searchKnowledge(body: { query: string; kind?: string; mode: SearchMode }) {
-  return request<{ items: KnowledgeItem[] }>('/api/v1/knowledge/search', {
-    method: 'POST',
-    body: JSON.stringify(body),
-  })
-}
-
-export function getStats() {
-  return request<StatsResponse>('/api/v1/stats')
+export async function getStats() {
+  const raw = await request<{
+    session_count: number
+    total_knowledge?: number
+    by_kind?: Record<string, number>
+    recent_knowledge?: unknown[]
+  }>('/api/v1/stats')
+  return { session_count: raw.session_count } satisfies StatsResponse
 }
 
 export type SessionSummary = {
@@ -130,9 +100,3 @@ export function fmtPct(v: number | null | undefined): string {
   return `${v.toFixed(1)}%`
 }
 
-export const KIND_LABELS: Record<string, string> = {
-  general_knowledge: 'General knowledge',
-  expertise: 'Expertise knowledge',
-  resolved_issues: 'Resolved issues',
-  task_guide: 'Task Guide',
-}

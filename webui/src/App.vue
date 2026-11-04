@@ -1,18 +1,22 @@
 <script setup lang="ts">
 import { RouterLink, RouterView, useRoute, useRouter } from 'vue-router'
 import { computed } from 'vue'
-import { clearToken, getToken, KIND_LABELS } from '@/lib/api'
+import { clearToken, getToken } from '@/lib/api'
 
 const route = useRoute()
 const router = useRouter()
 const authed = computed(() => !!getToken() && route.name !== 'login')
 
-const nav = [
-  { kind: 'general_knowledge', to: '/knowledge/general_knowledge' },
-  { kind: 'expertise', to: '/knowledge/expertise' },
-  { kind: 'resolved_issues', to: '/knowledge/resolved_issues' },
-  { kind: 'task_guide', to: '/knowledge/task_guide' },
-]
+const sessionUuid = computed(() =>
+  typeof route.params.uuid === 'string' ? route.params.uuid : null,
+)
+
+function navLinkClass(active: boolean) {
+  return [
+    'block rounded-md px-3 py-2 text-sm transition-colors',
+    active ? 'bg-muted text-foreground font-medium' : 'text-muted-foreground hover:bg-muted/60 hover:text-foreground',
+  ]
+}
 
 function logout() {
   clearToken()
@@ -22,31 +26,72 @@ function logout() {
 
 <template>
   <div class="min-h-screen">
-    <header v-if="authed" class="border-b border-border bg-card/80 backdrop-blur">
-      <div class="mx-auto flex max-w-6xl flex-wrap items-center gap-4 px-4 py-3">
-        <RouterLink to="/stats" class="text-sm font-semibold tracking-wide text-primary">
-          Agent Brain
-        </RouterLink>
-        <nav class="flex flex-wrap gap-3 text-sm text-muted-foreground">
-          <RouterLink class="hover:text-foreground" to="/stats">Stats</RouterLink>
+    <template v-if="authed">
+      <div class="flex min-h-screen">
+        <aside
+          class="flex w-56 shrink-0 flex-col border-r border-border bg-card/80 backdrop-blur"
+          aria-label="Sidebar"
+        >
           <RouterLink
-            v-for="item in nav"
-            :key="item.kind"
-            class="hover:text-foreground"
-            :to="item.to"
+            to="/stats"
+            class="border-b border-border px-4 py-4 text-sm font-semibold tracking-wide text-primary"
           >
-            {{ KIND_LABELS[item.kind] }}
+            Agent Brain
           </RouterLink>
-          <RouterLink class="hover:text-foreground" to="/search">Search</RouterLink>
-          <RouterLink class="hover:text-foreground" to="/sessions">Sessions</RouterLink>
-        </nav>
-        <button class="ml-auto text-sm text-muted-foreground hover:text-foreground" @click="logout">
-          Sign out
-        </button>
+
+          <nav class="flex flex-1 flex-col gap-1 p-2">
+            <RouterLink to="/stats" :class="navLinkClass(route.path === '/stats')">
+              Stats
+            </RouterLink>
+            <RouterLink
+              to="/sessions"
+              :class="navLinkClass(route.path.startsWith('/sessions') && !sessionUuid)"
+            >
+              Sessions
+            </RouterLink>
+
+            <template v-if="sessionUuid">
+              <p class="mt-4 px-3 text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                Session
+              </p>
+              <RouterLink
+                :to="`/sessions/${sessionUuid}`"
+                :class="navLinkClass(route.name === 'session')"
+              >
+                Overview
+              </RouterLink>
+              <RouterLink
+                :to="`/sessions/${sessionUuid}/thinking`"
+                :class="navLinkClass(route.name === 'session-thinking')"
+              >
+                Thinking
+              </RouterLink>
+              <RouterLink
+                :to="`/sessions/${sessionUuid}/turns`"
+                :class="navLinkClass(route.name === 'session-turns')"
+              >
+                Turns
+              </RouterLink>
+            </template>
+          </nav>
+
+          <button
+            type="button"
+            class="border-t border-border px-4 py-3 text-left text-sm text-muted-foreground hover:text-foreground"
+            @click="logout"
+          >
+            Sign out
+          </button>
+        </aside>
+
+        <main class="min-w-0 flex-1 px-6 py-6">
+          <RouterView />
+        </main>
       </div>
-    </header>
-    <main class="mx-auto max-w-6xl px-4 py-6">
+    </template>
+
+    <template v-else>
       <RouterView />
-    </main>
+    </template>
   </div>
 </template>

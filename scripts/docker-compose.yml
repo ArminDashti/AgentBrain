@@ -43,14 +43,11 @@ services:
     restart: unless-stopped
     depends_on:
       - agent-brain-api
+    ports:
+      - "5091:80"
     networks:
       - default
-      - pc-armin-local
 
 volumes:
   agent_brain_sqlite:
   agent_brain_qdrant:
-
-networks:
-  pc-armin-local:
-    external: true

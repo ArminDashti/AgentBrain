@@ -14,8 +14,8 @@ npm run dev
 
 Dev URL: http://127.0.0.1:5220 (proxies API at :8220)
 
-Production (Docker): http://agent-brain.local
+Production (Docker): http://127.0.0.1:5091
 
 Login: `armin` / `dopadopa123`
 
-Routes: Stats, General knowledge, Expertise knowledge, Resolved issues, Task Guide, Search, Sessions.
+Routes: Stats, Sessions.

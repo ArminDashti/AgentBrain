@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
-import { RouterLink, useRoute } from 'vue-router'
+import { useRoute } from 'vue-router'
 import { fmtNum, fmtPct, getSession, type SessionSummary } from '@/lib/api'
 
 const route = useRoute()
@@ -21,26 +21,9 @@ onMounted(async () => {
   <div v-if="error" class="text-red-400">{{ error }}</div>
   <div v-else-if="!session" class="text-muted-foreground">Loading…</div>
   <div v-else>
-    <div class="flex flex-wrap items-start gap-3">
-      <div>
-        <h1 class="text-2xl font-semibold">{{ session.name || session.uuid }}</h1>
-        <p class="text-sm text-muted-foreground">{{ session.subtitle }}</p>
-      </div>
-      <nav class="ml-auto flex gap-3 text-sm">
-        <RouterLink class="text-primary" :to="`/sessions/${uuid}`">Overview</RouterLink>
-        <RouterLink
-          class="text-muted-foreground hover:text-foreground"
-          :to="`/sessions/${uuid}/thinking`"
-        >
-          Thinking
-        </RouterLink>
-        <RouterLink
-          class="text-muted-foreground hover:text-foreground"
-          :to="`/sessions/${uuid}/turns`"
-        >
-          Turns
-        </RouterLink>
-      </nav>
+    <div>
+      <h1 class="text-2xl font-semibold">{{ session.name || session.uuid }}</h1>
+      <p class="text-sm text-muted-foreground">{{ session.subtitle }}</p>
     </div>
 
     <div class="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">

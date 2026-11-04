@@ -2,8 +2,6 @@ import { createRouter, createWebHistory } from 'vue-router'
 import { getToken } from '@/lib/api'
 import LoginView from '@/views/LoginView.vue'
 import StatsView from '@/views/StatsView.vue'
-import KindView from '@/views/KindView.vue'
-import SearchView from '@/views/SearchView.vue'
 import SessionsView from '@/views/ltm/SessionsView.vue'
 import SessionOverviewView from '@/views/ltm/SessionOverviewView.vue'
 import SessionThinkingView from '@/views/ltm/SessionThinkingView.vue'
@@ -15,8 +13,8 @@ const router = createRouter({
     { path: '/', redirect: '/stats' },
     { path: '/login', name: 'login', component: LoginView, meta: { public: true } },
     { path: '/stats', name: 'stats', component: StatsView },
-    { path: '/knowledge/:kind', name: 'kind', component: KindView },
-    { path: '/search', name: 'search', component: SearchView },
+    { path: '/knowledge/:kind', redirect: '/stats' },
+    { path: '/search', redirect: '/stats' },
     { path: '/sessions', name: 'sessions', component: SessionsView },
     { path: '/sessions/:uuid', name: 'session', component: SessionOverviewView },
     { path: '/sessions/:uuid/thinking', name: 'session-thinking', component: SessionThinkingView },
