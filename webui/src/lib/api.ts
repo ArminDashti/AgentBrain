@@ -90,6 +90,71 @@ export function getSessionTurns(uuid: string) {
   return request<{ turns: Array<Record<string, unknown>> }>(`/api/v1/sessions/${uuid}/turns`)
 }
 
+export type PromptRow = {
+  id: string
+  prompt: string
+  technically_revised: string
+  english_revised: string
+  harness: string
+  created_at: string
+  updated_at: string
+}
+
+export type PromptWrite = {
+  prompt: string
+  technically_revised: string
+  english_revised: string
+  harness?: string
+}
+
+export function listPrompts() {
+  return request<{ prompts: PromptRow[] }>('/api/v1/prompts')
+}
+
+export function getPrompt(id: string) {
+  return request<PromptRow>(`/api/v1/prompts/${id}`)
+}
+
+export function createPrompt(body: PromptWrite) {
+  return request<{ id: string }>('/api/v1/prompts', {
+    method: 'POST',
+    body: JSON.stringify(body),
+  })
+}
+
+export function updatePrompt(id: string, body: PromptWrite) {
+  return request<{ ok: boolean }>(`/api/v1/prompts/${id}`, {
+    method: 'PATCH',
+    body: JSON.stringify(body),
+  })
+}
+
+export function deletePrompt(id: string) {
+  return request<{ ok: boolean }>(`/api/v1/prompts/${id}`, { method: 'DELETE' })
+}
+
+const DATE_TIME_RE = /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/
+
+export function fmtDateTime(iso: string | undefined): string {
+  if (!iso) return '—'
+  const trimmed = iso.trim()
+  if (DATE_TIME_RE.test(trimmed)) return trimmed
+  const d = new Date(trimmed.includes('T') ? trimmed : `${trimmed.replace(' ', 'T')}Z`)
+  if (Number.isNaN(d.getTime())) return trimmed
+  const pad = (n: number) => String(n).padStart(2, '0')
+  return `${d.getUTCFullYear()}-${pad(d.getUTCMonth() + 1)}-${pad(d.getUTCDate())} ${pad(d.getUTCHours())}:${pad(d.getUTCMinutes())}:${pad(d.getUTCSeconds())}`
+}
+
+function clip(s: string, max: number): string {
+  const t = s.trim()
+  if (t.length <= max) return t || '—'
+  return `${t.slice(0, max)}…`
+}
+
+export function clipPromptCell(s: string, max = 80): string {
+  return clip(s, max)
+}
+
 export function fmtNum(v: number | null | undefined): string {
   if (v == null) return '—'
   return new Intl.NumberFormat().format(v)

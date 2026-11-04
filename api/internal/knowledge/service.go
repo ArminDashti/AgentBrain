@@ -6,10 +6,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"strings"
-	"time"
 
 	"github.com/ArminDashti/agent-brain/agent-brain-api/internal/embed"
 	"github.com/ArminDashti/agent-brain/agent-brain-api/internal/qdrant"
+	"github.com/ArminDashti/agent-brain/agent-brain-api/internal/timefmt"
 	"github.com/google/uuid"
 )
 
@@ -46,8 +46,8 @@ type Item struct {
 	Metadata  map[string]any `json:"metadata"`
 	InSQLite  bool           `json:"in_sqlite"`
 	InQdrant  bool           `json:"in_qdrant"`
-	CreatedAt time.Time      `json:"created_at"`
-	UpdatedAt time.Time      `json:"updated_at"`
+	CreatedAt string         `json:"created_at"`
+	UpdatedAt string         `json:"updated_at"`
 	Score     *float64       `json:"score,omitempty"`
 }
 
@@ -75,15 +75,6 @@ func marshalTags(tags []string) (string, error) {
 
 type scannable interface{ Scan(dest ...any) error }
 
-func parseTime(s string) time.Time {
-	for _, layout := range []string{time.RFC3339Nano, time.RFC3339, "2006-01-02 15:04:05"} {
-		if t, err := time.Parse(layout, s); err == nil {
-			return t
-		}
-	}
-	return time.Time{}
-}
-
 func scanItem(row scannable) (*Item, error) {
 	var it Item
 	var tagsRaw, metaRaw string
@@ -94,8 +85,8 @@ func scanItem(row scannable) (*Item, error) {
 	}
 	it.InSQLite = inSQLite != 0
 	it.InQdrant = inQdrant != 0
-	it.CreatedAt = parseTime(createdAt)
-	it.UpdatedAt = parseTime(updatedAt)
+	it.CreatedAt = timefmt.Normalize(createdAt)
+	it.UpdatedAt = timefmt.Normalize(updatedAt)
 	it.Tags = []string{}
 	_ = json.Unmarshal([]byte(tagsRaw), &it.Tags)
 	if it.Tags == nil {
@@ -133,7 +124,7 @@ func (s *Service) Create(ctx context.Context, kind, title, body string, tags []s
 	id := uuid.NewString()
 	inSQLite := target == TargetSQLite || target == TargetBoth
 	inQD := target == TargetQdrant || target == TargetBoth
-	now := time.Now().UTC().Format(time.RFC3339Nano)
+	now := timefmt.NowUTC()
 	_, err = s.DB.ExecContext(ctx, `
 		INSERT INTO knowledge (id, kind, title, body, tags, metadata, in_sqlite, in_qdrant, created_at, updated_at)
 		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
@@ -302,10 +293,10 @@ func mergeByID(a, b []Item, limit int) []Item {
 }
 
 type Stats struct {
-	TotalKnowledge   int            `json:"total_knowledge"`
-	ByKind           map[string]int `json:"by_kind"`
-	SessionCount     int            `json:"session_count"`
-	RecentKnowledge  []Item         `json:"recent_knowledge"`
+	TotalKnowledge  int            `json:"total_knowledge"`
+	ByKind          map[string]int `json:"by_kind"`
+	SessionCount    int            `json:"session_count"`
+	RecentKnowledge []Item         `json:"recent_knowledge"`
 }
 
 func (s *Service) Stats(ctx context.Context) (*Stats, error) {

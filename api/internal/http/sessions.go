@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/ArminDashti/agent-brain/agent-brain-api/internal/sessions"
+	"github.com/ArminDashti/agent-brain/agent-brain-api/internal/timefmt"
 	"github.com/gin-gonic/gin"
 )
 
@@ -301,9 +302,9 @@ func nullStringTime(v sql.NullString) any {
 	if !v.Valid || v.String == "" {
 		return nil
 	}
-	for _, layout := range []string{time.RFC3339Nano, time.RFC3339, "2006-01-02 15:04:05"} {
+	for _, layout := range []string{timefmt.Layout, time.RFC3339Nano, time.RFC3339} {
 		if t, err := time.Parse(layout, v.String); err == nil {
-			return t.Format(time.RFC3339Nano)
+			return timefmt.FormatUTC(t)
 		}
 	}
 	return v.String

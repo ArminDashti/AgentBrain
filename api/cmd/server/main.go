@@ -73,6 +73,12 @@ func main() {
 			authed.GET("/sessions/:uuid", h.GetSession)
 			authed.GET("/sessions/:uuid/thinking", h.GetSessionThinking)
 			authed.GET("/sessions/:uuid/turns", h.GetSessionTurns)
+
+			authed.GET("/prompts", h.ListPrompts)
+			authed.POST("/prompts", h.CreatePrompt)
+			authed.GET("/prompts/:id", h.GetPrompt)
+			authed.PATCH("/prompts/:id", h.UpdatePrompt)
+			authed.DELETE("/prompts/:id", h.DeletePrompt)
 		}
 	}
 	log.Printf("listening on %s", cfg.Addr)

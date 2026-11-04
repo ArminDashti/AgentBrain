@@ -142,7 +142,7 @@ func Session(uuid, dbPath string) ([]byte, error) {
 
 	result := map[string]any{
 		"uuid":          uuid,
-		"extractedAt":   time.Now().UTC().Format(time.RFC3339Nano),
+		"extractedAt":   time.Now().UTC().Format("2006-01-02 15:04:05"),
 		"dbPath":        abs,
 		"found":         true,
 		"summary":       summary,

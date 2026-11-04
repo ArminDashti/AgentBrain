@@ -10,6 +10,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/ArminDashti/agent-brain/agent-brain-api/internal/timefmt"
 	"github.com/google/uuid"
 	_ "modernc.org/sqlite"
 )
@@ -78,7 +79,7 @@ const (
 
 func SeedDefaultUser(ctx context.Context, db *sql.DB, passwordHash string) error {
 	id := uuid.NewString()
-	now := time.Now().UTC().Format(time.RFC3339Nano)
+	now := timefmt.NowUTC()
 	_, err := db.ExecContext(ctx, `
 		INSERT INTO users (id, email, password_hash, username, created_at, updated_at)
 		VALUES (?, ?, ?, ?, ?, ?)

@@ -3,8 +3,8 @@ package sessions
 import (
 	"context"
 	"database/sql"
-	"time"
 
+	"github.com/ArminDashti/agent-brain/agent-brain-api/internal/timefmt"
 	"github.com/google/uuid"
 )
 
@@ -16,10 +16,10 @@ func Persist(ctx context.Context, db *sql.DB, parsed *Parsed) error {
 	defer func() { _ = tx.Rollback() }()
 
 	s := parsed.Session
-	now := time.Now().UTC().Format(time.RFC3339Nano)
+	now := timefmt.NowUTC()
 	var extracted any
 	if s.ExtractedAt != nil {
-		extracted = s.ExtractedAt.UTC().Format(time.RFC3339Nano)
+		extracted = timefmt.FormatUTC(*s.ExtractedAt)
 	}
 	_, err = tx.ExecContext(ctx, `
 		INSERT INTO sessions (

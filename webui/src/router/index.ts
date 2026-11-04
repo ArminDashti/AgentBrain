@@ -6,6 +6,8 @@ import SessionsView from '@/views/ltm/SessionsView.vue'
 import SessionOverviewView from '@/views/ltm/SessionOverviewView.vue'
 import SessionThinkingView from '@/views/ltm/SessionThinkingView.vue'
 import SessionTurnsView from '@/views/ltm/SessionTurnsView.vue'
+import PromptsView from '@/views/PromptsView.vue'
+import PromptDetailView from '@/views/PromptDetailView.vue'
 
 const router = createRouter({
   history: createWebHistory(),
@@ -15,6 +17,8 @@ const router = createRouter({
     { path: '/stats', name: 'stats', component: StatsView },
     { path: '/knowledge/:kind', redirect: '/stats' },
     { path: '/search', redirect: '/stats' },
+    { path: '/prompts', name: 'prompts', component: PromptsView },
+    { path: '/prompts/:id', name: 'prompt', component: PromptDetailView },
     { path: '/sessions', name: 'sessions', component: SessionsView },
     { path: '/sessions/:uuid', name: 'session', component: SessionOverviewView },
     { path: '/sessions/:uuid/thinking', name: 'session-thinking', component: SessionThinkingView },

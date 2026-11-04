@@ -49,6 +49,9 @@ function logout() {
             >
               Sessions
             </RouterLink>
+            <RouterLink to="/prompts" :class="navLinkClass(route.path.startsWith('/prompts'))">
+              Prompts
+            </RouterLink>
 
             <template v-if="sessionUuid">
               <p class="mt-4 px-3 text-xs font-medium uppercase tracking-wide text-muted-foreground">

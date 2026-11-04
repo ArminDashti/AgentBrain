@@ -10,7 +10,8 @@ Accessible locally at **http://127.0.0.1:5091** (WebUI) and **http://127.0.0.1:5
 |--------|------|
 | `api` | Gin API + SQLite + Qdrant |
 | `webui` | Vue + Tailwind — read-only Sessions browse + stats (Dark+) |
-| `mcp` | MCP stdio server (agents write/search via API) |
+| `mcp` | MCP stdio server (knowledge store/search via API) |
+| `mcp-prompt` | MCP stdio server — tool `send-human-prompt` → Prompts API |
 | `rule-skills` | Cursor plugin: rules + skills for store/search/ingest |
 | `dispatcher-win` | Windows CLI: extract `state.vscdb` → API ingest (`ingest` / `sync`) |
 | `scripts` | Windows Docker install (host ports 5090 / 5091) |
