@@ -70,3 +70,28 @@ unverified) or skip it. This keeps confident guesses out.
 <!-- When no richer mechanism is available, append dated golden-path entries here.
      Format: ### YYYY-MM-DD — <title>  /  **Goal**, **Steps**, **Gotchas**,
      **What didn't work**. Keep secrets out — point to where they live. -->
+
+### 2026-11-06 — Cloud Agent dev stack
+
+**Goal.** On a fresh Cloud Agent VM, run Qdrant, the API, and the Vite WebUI so an agent can log in, write a prompt, and store knowledge in SQLite and Qdrant.
+
+**Steps.**
+- The default image Go is too old. Install Go **1.26.10** (satisfies `dispatcher-win/go.mod` `go 1.26.6` and `api/go.mod` `go 1.25.0`) to `/usr/local/go` and symlink `go` and `gofmt` into `/usr/local/bin`. Use `GOTOOLCHAIN=local` and `CGO_ENABLED=0`. `modernc.org/sqlite` builds without cgo.
+- Install Qdrant **v1.13.2** (the compose pin) from `qdrant-x86_64-unknown-linux-musl.tar.gz` to `/usr/local/bin/qdrant`. Listen on HTTP **6335** and gRPC **6336** (`QDRANT__SERVICE__HTTP_PORT` / `QDRANT__SERVICE__GRPC_PORT`) with storage under `$HOME/.local/share/agent-brain/qdrant`. That host port is what `api/.env.example` already sets (`QDRANT_URL=http://127.0.0.1:6335`); compose publishes `6335:6333`.
+- If `.env` is missing, copy `.env.example` in `api`, `webui`, `mcp`, and `mcp-prompt`. When `mcp` or `mcp-prompt` still has `AGENT_BRAIN_API_URL=http://127.0.0.1:5090`, change only that default to `http://127.0.0.1:8220`. Do not overwrite an edited `.env`.
+- `go mod download` in `api` and `dispatcher-win`. `npm ci` in `webui`, `mcp`, and `mcp-prompt`, then `npm run build` in the two MCP packages. Node 22 is already on the login-shell `PATH`; do not install another Node.
+- Start order, each in its own tmux session (`qdrant`, `api`, `webui`), skipping a session when its port already answers:
+  1. Qdrant, then `curl -sf http://127.0.0.1:6335/readyz` (`all shards are ready`).
+  2. From `api/`: `go run ./cmd/server` with `SQLITE_PATH=$HOME/.local/share/agent-brain/sqlite/agent_brain.db` so the database stays outside the worktree. Wait until `http://127.0.0.1:8220/health` is HTTP 200 and both `sqlite` and `qdrant` are true.
+  3. From `webui/`: `npm run dev -- --host 0.0.0.0 --port 5220`. Open `http://127.0.0.1:5220` (proxies `/api` to `:8220`).
+- Login credentials are the API seed in `api/internal/db` (`DefaultUsername`, `DefaultPassword`). Do not copy the password into this file.
+- Checks that passed on 2026-11-06: `go test ./...` in `api` (timefmt ok), `npm run build` in `webui`, login plus `POST /api/v1/knowledge` with `store_target` `both` (`in_sqlite` and `in_qdrant` true), `POST /api/v1/prompts`, and the WebUI flow Stats → Prompts (create + save) → Sessions.
+
+**Gotchas.**
+- Startup only logs a warning when Qdrant is down, but `GET /health` returns **503** until Qdrant is ready. Wait on `/health` 200, not on the process listening.
+- Root README ports **5090** / **5091** are the Windows Docker compose stack (`scripts/docker-compose.yml`). Local dev is API **8220** and WebUI **5220**.
+- `npm ci` is idempotent and exits 0 on a second run; it still reinstalls `node_modules`.
+
+**What didn't work.**
+- `/usr/bin/go` **1.22.2** cannot compile these modules. The `go 1.26.6` line fails the toolchain check before any package builds.
+- Docker Compose for Qdrant (the README path) was not used. Docker is not on the default image, and the API only needs the HTTP port already in `api/.env.example`. The v1.13.2 binary on port 6335 is the verified path.
