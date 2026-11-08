@@ -38,6 +38,19 @@ Then open http://127.0.0.1:5091
 
 Default login: `armin` / `dopadopa123`
 
+## Cloud Agent (Linux VM)
+
+Docker is not available on the default Cloud Agent image. From the repo root:
+
+```bash
+./scripts/run-local-dev.sh
+```
+
+- WebUI: **http://127.0.0.1:5091** (same ports as Windows Docker)
+- API: **http://127.0.0.1:5090**
+
+That URL is on the **agent VM**. In Cursor, open it from the agent environment (browser preview / forwarded port), not `localhost` in your own browser unless a port is forwarded to your machine.
+
 - WebUI: `http://127.0.0.1:5091` (proxies `/api` to the API container)
 - API: `http://127.0.0.1:5090`
 - Qdrant: internal to compose (also used by API)

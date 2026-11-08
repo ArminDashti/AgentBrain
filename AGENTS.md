@@ -77,7 +77,7 @@ unverified) or skip it. This keeps confident guesses out.
 
 **Steps.**
 - The default image Go is too old. Install Go **1.26.10** (satisfies `dispatcher-win/go.mod` `go 1.26.6` and `api/go.mod` `go 1.25.0`) to `/usr/local/go` and symlink `go` and `gofmt` into `/usr/local/bin`. Use `GOTOOLCHAIN=local` and `CGO_ENABLED=0`. `modernc.org/sqlite` builds without cgo.
-- Install Qdrant **v1.13.2** (the compose pin) from `qdrant-x86_64-unknown-linux-musl.tar.gz` to `/usr/local/bin/qdrant`. Listen on HTTP **6335** and gRPC **6336** (`QDRANT__SERVICE__HTTP_PORT` / `QDRANT__SERVICE__GRPC_PORT`) with storage under `$HOME/.local/share/agent-brain/qdrant`. That host port is what `api/.env.example` already sets (`QDRANT_URL=http://127.0.0.1:6335`); compose publishes `6335:6333`.
+- Install Qdrant **v1.13.2** (the compose pin) from `qdrant-x86_64-unknown-linux-musl.tar.gz` to `/usr/local/bin/qdrant`. Start with a small config at `$HOME/.local/share/agent-brain/qdrant-config.yaml` (`storage.storage_path` → `$HOME/.local/share/agent-brain/qdrant`, `service.http_port` **6335**, `grpc_port` **6336**): `qdrant --config-path "$HOME/.local/share/agent-brain/qdrant-config.yaml"`. That host port is what `api/.env.example` already sets (`QDRANT_URL=http://127.0.0.1:6335`); compose publishes `6335:6333`.
 - If `.env` is missing, copy `.env.example` in `api`, `webui`, `mcp`, and `mcp-prompt`. When `mcp` or `mcp-prompt` still has `AGENT_BRAIN_API_URL=http://127.0.0.1:5090`, change only that default to `http://127.0.0.1:8220`. Do not overwrite an edited `.env`.
 - `go mod download` in `api` and `dispatcher-win`. `npm ci` in `webui`, `mcp`, and `mcp-prompt`, then `npm run build` in the two MCP packages. Node 22 is already on the login-shell `PATH`; do not install another Node.
 - Start order, each in its own tmux session (`qdrant`, `api`, `webui`), skipping a session when its port already answers:
@@ -95,3 +95,4 @@ unverified) or skip it. This keeps confident guesses out.
 **What didn't work.**
 - `/usr/bin/go` **1.22.2** cannot compile these modules. The `go 1.26.6` line fails the toolchain check before any package builds.
 - Docker Compose for Qdrant (the README path) was not used. Docker is not on the default image, and the API only needs the HTTP port already in `api/.env.example`. The v1.13.2 binary on port 6335 is the verified path.
+- Qdrant **1.13.2** rejects CLI `--storage-path`; use `storage.storage_path` in a config file (or env overrides) instead.
