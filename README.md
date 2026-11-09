@@ -8,7 +8,7 @@ Accessible locally at **http://127.0.0.1:5091** (WebUI) and **http://127.0.0.1:5
 
 | Folder | Role |
 |--------|------|
-| `api` | Gin API + SQLite + Qdrant |
+| `api` | Gin API + SQLite |
 | `webui` | Vue + Tailwind — read-only Sessions browse + stats (Dark+) |
 | `mcp` | MCP stdio server (knowledge store/search via API) |
 | `mcp-prompt` | MCP stdio server — tool `send-human-prompt` → Prompts API |
@@ -20,7 +20,7 @@ Accessible locally at **http://127.0.0.1:5091** (WebUI) and **http://127.0.0.1:5
 
 | Surface | Storage | Purpose |
 |---------|---------|---------|
-| **Knowledge** | SQLite `knowledge` + optional Qdrant | Durable knowledge kinds |
+| **Knowledge** | SQLite `knowledge` | Durable knowledge kinds |
 | **Sessions** | SQLite `sessions` + `turns` | Cursor session context %, tokens, thinking, turns (filled by Windows dispatcher) |
 
 WebUI is **read-only** (session list/stats). Knowledge writes go through MCP/API. Session rows are filled by `dispatcher-win` from `%APPDATA%\Cursor\User\globalStorage\state.vscdb` (`sync` = all composers).
@@ -53,23 +53,20 @@ That URL is on the **agent VM**. In Cursor, open it from the agent environment (
 
 - WebUI: `http://127.0.0.1:5091` (proxies `/api` to the API container)
 - API: `http://127.0.0.1:5090`
-- Qdrant: internal to compose (also used by API)
 
 Fresh SQLite on first install. Use `.\reinstall-win-local-docker.ps1` to wipe volumes.
 
 ## Local API (without full stack)
 
 ```bash
-cd api && cp .env.example .env && docker compose up -d
-# Qdrant only; then:
-go run ./cmd/server
+cd api && cp .env.example .env && go run ./cmd/server
 ```
 
-## Storage choice (knowledge)
+## Storage (knowledge)
 
-Agents pick `store_target` per write: `sqlite` (structured/filterable), `qdrant` (semantic), or `both`.
+Knowledge is stored in SQLite. Search uses structured filters (`kind`, `q`) and `search_knowledge` with SQLite `LIKE` on title and body.
 
-Session ingest always writes to SQLite (no Qdrant).
+Session ingest always writes to SQLite.
 
 ## Fill Sessions (Windows)
 

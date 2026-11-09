@@ -5,7 +5,7 @@
 
 .DESCRIPTION
   Compose project: agent-brain
-  Services: agent-brain-api (host 5090), agent-brain-webui (host 5091), Qdrant + SQLite.
+  Services: agent-brain-api (host 5090), agent-brain-webui (host 5091), SQLite.
 
 .EXAMPLE
   .\install-win-local-docker.ps1
@@ -78,7 +78,7 @@ Write-Host "Done: stack '$StackName' running"
 Write-Host "  WebUI  http://127.0.0.1:$WebUiPort"
 Write-Host "  API    http://127.0.0.1:$ApiPort"
 if ($updating) {
-  Write-Host '  Data volumes preserved (SQLite + Qdrant).'
+  Write-Host '  Data volumes preserved (SQLite).'
 } else {
   Write-Host '  Fresh SQLite volume (no Postgres).'
 }

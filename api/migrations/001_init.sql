@@ -14,8 +14,6 @@ CREATE TABLE IF NOT EXISTS knowledge (
     body TEXT NOT NULL DEFAULT '',
     tags TEXT NOT NULL DEFAULT '[]',
     metadata TEXT NOT NULL DEFAULT '{}',
-    in_sqlite INTEGER NOT NULL DEFAULT 1,
-    in_qdrant INTEGER NOT NULL DEFAULT 0,
     created_at TEXT NOT NULL DEFAULT (datetime('now')),
     updated_at TEXT NOT NULL DEFAULT (datetime('now'))
 );

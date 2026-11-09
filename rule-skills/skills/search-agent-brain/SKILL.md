@@ -7,13 +7,11 @@ description: Search agent-brain for prior resolved issues, task guides, and expe
 
 Use MCP tool `search_knowledge` on `agent-brain-mcp`.
 
-## Modes
+## Mode
 
 | Mode | Backend |
 |------|---------|
-| `structured` | SQLite LIKE / filters |
-| `semantic` | Qdrant vector search |
-| `hybrid` | Merge both (default) |
+| `structured` | SQLite LIKE on title and body (default) |
 
 Optional `kind` filter: `general_knowledge`, `expertise`, `resolved_issues`, `task_guide`.
 

@@ -8,10 +8,8 @@ import (
 	"github.com/ArminDashti/agent-brain/agent-brain-api/internal/auth"
 	"github.com/ArminDashti/agent-brain/agent-brain-api/internal/config"
 	appdb "github.com/ArminDashti/agent-brain/agent-brain-api/internal/db"
-	"github.com/ArminDashti/agent-brain/agent-brain-api/internal/embed"
 	httpapi "github.com/ArminDashti/agent-brain/agent-brain-api/internal/http"
 	"github.com/ArminDashti/agent-brain/agent-brain-api/internal/knowledge"
-	"github.com/ArminDashti/agent-brain/agent-brain-api/internal/qdrant"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
@@ -39,13 +37,8 @@ func main() {
 	if err := appdb.SeedDefaultUser(ctx, sqlDB, hash); err != nil {
 		log.Fatalf("seed default user: %v", err)
 	}
-	qd := qdrant.New(cfg.QdrantURL, cfg.QdrantCollection, cfg.EmbeddingDim)
-	if err := qd.EnsureCollection(ctx); err != nil {
-		log.Printf("warning: qdrant collection: %v", err)
-	}
-	emb := embed.New(cfg.EmbeddingDim, cfg.EmbeddingURL, cfg.EmbeddingModel, cfg.EmbeddingAPIKey)
-	svc := &knowledge.Service{DB: sqlDB, Qdrant: qd, Embed: emb}
-	h := httpapi.New(sqlDB, cfg, svc, qd)
+	svc := &knowledge.Service{DB: sqlDB}
+	h := httpapi.New(sqlDB, cfg, svc)
 	r := gin.Default()
 	r.Use(cors.New(cors.Config{
 		AllowOriginFunc: func(string) bool { return true },

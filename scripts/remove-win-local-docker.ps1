@@ -4,7 +4,7 @@
   Completely remove the local Docker stack for agent-brain (Windows).
 
 .DESCRIPTION
-  Stops and removes containers, named volumes (SQLite + Qdrant data),
+  Stops and removes containers, named volumes (SQLite data),
   and project images for Compose project agent-brain.
 
 .EXAMPLE

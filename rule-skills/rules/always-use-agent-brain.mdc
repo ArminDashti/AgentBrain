@@ -14,11 +14,8 @@ alwaysApply: true
 When you learn a reusable solution, procedure, or expertise in this session:
 
 1. Store it via `agent-brain-mcp` (`store_knowledge`) with the right `kind`.
-2. Choose `store_target`:
-   - `sqlite` — exact filters, lists, structured lookup
-   - `qdrant` — semantic similarity / “find something like this”
-   - `both` — should be listable and searchable
-3. Before solving a familiar problem, call `search_knowledge` (hybrid) first.
+2. All knowledge is stored in SQLite (`store_target: sqlite`).
+3. Before solving a familiar problem, call `search_knowledge` (structured) first.
 
 ## Sessions (Cursor chats)
 

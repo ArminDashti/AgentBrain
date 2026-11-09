@@ -8,18 +8,7 @@ tmux() { command tmux -f "$TMUX_CONF" "$@"; }
 export GOTOOLCHAIN=local CGO_ENABLED=0
 export PATH="/usr/local/go/bin:${PATH:-}"
 
-QDRANT_CFG="${HOME}/.local/share/agent-brain/qdrant-config.yaml"
-mkdir -p "${HOME}/.local/share/agent-brain/qdrant" "${HOME}/.local/share/agent-brain/sqlite"
-
-if [[ ! -f "$QDRANT_CFG" ]]; then
-  cat >"$QDRANT_CFG" <<EOF
-storage:
-  storage_path: ${HOME}/.local/share/agent-brain/qdrant
-service:
-  http_port: 6335
-  grpc_port: 6336
-EOF
-fi
+mkdir -p "${HOME}/.local/share/agent-brain/sqlite"
 
 for d in api webui mcp-prompt; do
   [[ -f "$ROOT/$d/.env" ]] || cp "$ROOT/$d/.env.example" "$ROOT/$d/.env"
@@ -32,10 +21,6 @@ start_session() {
   fi
   tmux new-session -d -s "$name" -c "$dir" -- bash -lc "$cmd"
 }
-
-if ! curl -sf http://127.0.0.1:6335/readyz >/dev/null; then
-  start_session qdrant "$HOME" 'exec qdrant --config-path "'"$QDRANT_CFG"'"'
-fi
 
 if ! curl -sf http://127.0.0.1:5090/health >/dev/null 2>&1; then
   start_session api "$ROOT/api" '
@@ -54,7 +39,6 @@ fi
 
 echo "Waiting for services..."
 for _ in $(seq 1 90); do
-  curl -sf http://127.0.0.1:6335/readyz >/dev/null || { sleep 1; continue; }
   curl -sf http://127.0.0.1:5090/health | grep -q '"ok":true' || { sleep 1; continue; }
   code=$(curl -sf -o /dev/null -w "%{http_code}" http://127.0.0.1:5091/ || echo 000)
   [[ "$code" != "000" ]] || { sleep 1; continue; }
