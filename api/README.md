@@ -1,17 +1,20 @@
-# agent-brain API
+# agent-brain-api
 
-Gin + SQLite + Qdrant knowledge API.
+Gin + SQLite knowledge API.
+
+## Run
 
 ```bash
 cp .env.example .env
-docker compose up -d   # Qdrant only
-go mod tidy
 go run ./cmd/server
 ```
 
-Env: `SQLITE_PATH` (default `./data/agent_brain.db`), `QDRANT_URL`, `JWT_SECRET`.
+Env: `SQLITE_PATH` (default `./data/agent_brain.db`), `JWT_SECRET`.
 
-Login: `armin` / `dopadopa123` — API `:8220`.
+## Knowledge
 
-Kinds: `general_knowledge`, `expertise`, `resolved_issues`, `task_guide`.  
-`store_target`: `sqlite` | `qdrant` | `both`.
+`store_target`: `sqlite` (only).
+
+Search `mode`: `structured` (SQLite LIKE on title/body).
+
+Kinds: `general_knowledge`, `expertise`, `resolved_issues`, `task_guide`.

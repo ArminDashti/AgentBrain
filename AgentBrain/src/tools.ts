@@ -13,11 +13,9 @@ function errorResult(err: unknown) {
 }
 
 const kindSchema = z.enum(['general_knowledge', 'expertise', 'resolved_issues', 'task_guide'])
-const targetSchema = z.enum(['sqlite', 'qdrant', 'both'])
-const modeSchema = z.enum(['structured', 'semantic', 'hybrid'])
 
 export function registerTools(server: McpServer, client: BrainClient): void {
-  server.tool('health_check', 'Check agent-brain-api health (SQLite + Qdrant).', {}, async () => {
+  server.tool('health_check', 'Check agent-brain-api health (SQLite).', {}, async () => {
     try {
       return textResult(await client.health())
     } catch (err) {
@@ -48,18 +46,19 @@ export function registerTools(server: McpServer, client: BrainClient): void {
 
   server.tool(
     'store_knowledge',
-    'Store knowledge. Prefer sqlite for exact/filterable records, qdrant for semantic recall, both when listable and searchable.',
+    'Store knowledge in SQLite (structured search via title/body filters).',
     {
       kind: kindSchema,
       title: z.string(),
       body: z.string().default(''),
       tags: z.array(z.string()).optional(),
-      store_target: targetSchema.describe('sqlite | qdrant | both'),
+      store_target: z.literal('sqlite').optional().describe('sqlite only (default)'),
       metadata: z.record(z.unknown()).optional(),
     },
     async (args) => {
       try {
-        return textResult(await client.storeKnowledge(args))
+        const body = { ...args, store_target: 'sqlite' as const }
+        return textResult(await client.storeKnowledge(body))
       } catch (err) {
         return errorResult(err)
       }
@@ -68,11 +67,11 @@ export function registerTools(server: McpServer, client: BrainClient): void {
 
   server.tool(
     'search_knowledge',
-    'Search knowledge. structured=SQLite LIKE, semantic=Qdrant vectors, hybrid=merge both.',
+    'Search knowledge via SQLite LIKE on title and body.',
     {
       query: z.string(),
       kind: kindSchema.optional(),
-      mode: modeSchema.default('hybrid'),
+      mode: z.enum(['structured']).optional().default('structured'),
       limit: z.number().int().positive().optional(),
     },
     async (args) => {
@@ -115,7 +114,7 @@ export function registerTools(server: McpServer, client: BrainClient): void {
 
   server.tool(
     'delete_knowledge',
-    'Delete knowledge from SQLite and Qdrant (if present).',
+    'Delete knowledge from SQLite.',
     { id: z.string().uuid() },
     async ({ id }) => {
       try {

@@ -29,7 +29,7 @@ Cursor MCP example (API published on Docker host port 5090):
 ## Tools
 
 - `health_check`, `login`
-- `store_knowledge` (kind, title, body, tags, store_target: sqlite|qdrant|both)
+- `store_knowledge` (kind, title, body, tags; SQLite only)
 - `search_knowledge` (query, kind?, mode)
 - `list_knowledge`, `get_knowledge`, `delete_knowledge`
 - Session tools: `ingest_session`, `list_sessions`, `get_session_*`

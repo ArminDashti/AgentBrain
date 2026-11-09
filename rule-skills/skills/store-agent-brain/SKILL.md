@@ -15,12 +15,7 @@ Use MCP tool `store_knowledge` on `agent-brain-mcp`.
 | `title` | Short label |
 | `body` | Full text |
 | `tags` | Optional string array |
-| `store_target` | `sqlite` \| `qdrant` \| `both` |
 
-## Target choice
-
-- Structured inventory / filters → `sqlite`
-- “Find similar later” → `qdrant` or `both`
-- Default for important fixes → `both`
+Storage is SQLite only. You may omit `store_target` or set it to `sqlite`.
 
 Login uses env defaults (`armin` / `dopadopa123`) unless you call `login` first.

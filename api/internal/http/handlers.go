@@ -8,7 +8,6 @@ import (
 	"github.com/ArminDashti/agent-brain/agent-brain-api/internal/auth"
 	"github.com/ArminDashti/agent-brain/agent-brain-api/internal/config"
 	"github.com/ArminDashti/agent-brain/agent-brain-api/internal/knowledge"
-	"github.com/ArminDashti/agent-brain/agent-brain-api/internal/qdrant"
 	"github.com/gin-gonic/gin"
 )
 
@@ -16,21 +15,19 @@ type Handler struct {
 	db  *sql.DB
 	cfg config.Config
 	svc *knowledge.Service
-	qd  *qdrant.Client
 }
 
-func New(db *sql.DB, cfg config.Config, svc *knowledge.Service, qd *qdrant.Client) *Handler {
-	return &Handler{db: db, cfg: cfg, svc: svc, qd: qd}
+func New(db *sql.DB, cfg config.Config, svc *knowledge.Service) *Handler {
+	return &Handler{db: db, cfg: cfg, svc: svc}
 }
 
 func (h *Handler) Health(c *gin.Context) {
 	sqliteOK := h.db.PingContext(c.Request.Context()) == nil
-	qdOK := h.qd.Ready(c.Request.Context()) == nil
 	status := http.StatusOK
-	if !sqliteOK || !qdOK {
+	if !sqliteOK {
 		status = http.StatusServiceUnavailable
 	}
-	c.JSON(status, gin.H{"ok": sqliteOK && qdOK, "service": "agent-brain-api", "sqlite": sqliteOK, "qdrant": qdOK})
+	c.JSON(status, gin.H{"ok": sqliteOK, "service": "agent-brain-api", "sqlite": sqliteOK})
 }
 
 type loginReq struct {
@@ -73,7 +70,11 @@ func (h *Handler) CreateKnowledge(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid body"})
 		return
 	}
-	item, err := h.svc.Create(c.Request.Context(), req.Kind, req.Title, req.Body, req.Tags, req.Metadata, knowledge.StoreTarget(req.StoreTarget))
+	target := knowledge.StoreTarget(req.StoreTarget)
+	if req.StoreTarget == "" {
+		target = knowledge.TargetSQLite
+	}
+	item, err := h.svc.Create(c.Request.Context(), req.Kind, req.Title, req.Body, req.Tags, req.Metadata, target)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
