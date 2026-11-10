@@ -1,0 +1,23 @@
+---
+description: Rebuild and verify local AgentBrain Docker stack (api :5090, webui :5091). Use after code changes or when /armin-refresh-after-changes runs in this repo.
+---
+
+# AgentBrain local refresh
+
+**Goal:** Ship latest `agent-brain-api` + `agent-brain-webui` images without wiping data.
+
+## Steps
+1. From repo root: `docker compose -f scripts/docker-compose.yml -p agent-brain up -d --build --force-recreate agent-brain-api agent-brain-webui`
+2. Leave `agent-brain-qdrant` running; keep volumes `agent_brain_sqlite` / `agent_brain_qdrant`
+3. Prove new: `docker inspect agent-brain-api agent-brain-webui --format "{{.Name}} image={{.Image}} created={{.Created}}"`
+4. Check `http://127.0.0.1:5090/health` → 200 and `http://127.0.0.1:5091/` → 200
+5. Built-in browser: open `:5091`, hard-reload, sign in as `armin` (password from Armin environment defaults)
+
+## Gotchas
+- Compose file lives under `scripts/docker-compose.yml`, project name `-p agent-brain`
+- JWT secret is compose env `JWT_SECRET` (value stays in compose/env — do not copy into rules)
+- Root `/` on API returns 404; use `/health`
+
+## What didn't work
+- `docker restart` alone: leaves old image layers when source changed
+- Relying on HMR: production nginx image has no HMR
