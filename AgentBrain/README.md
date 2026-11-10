@@ -28,10 +28,7 @@ Cursor MCP example (API published on Docker host port 5090):
 
 ## Tools
 
-- `health_check`, `login`
-- `store_knowledge` (kind, title, body, tags; SQLite only)
-- `search_knowledge` (query, kind?, mode)
-- `list_knowledge`, `get_knowledge`, `delete_knowledge`
-- Session tools: `ingest_session`, `list_sessions`, `get_session_*`
+- `health_check` — API health (SQLite)
+- `list_sessions` — list Sessions (`q?` name search); JWT via env login
 
-Kinds: `general_knowledge`, `expertise`, `resolved_issues`, `task_guide`.
+Knowledge store/search and session ingest use the HTTP API or `dispatcher-win`, not MCP tools.

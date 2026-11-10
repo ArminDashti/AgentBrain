@@ -66,8 +66,7 @@ $bin = if ($env:AGENT_BRAIN_DISPATCHER) { $env:AGENT_BRAIN_DISPATCHER } else { "
 ```
 
    - Output: `...\cursor-db\sessions\<uuid>.json`
-   - Prefer MCP `ingest_session(file_path="...")` when available; else HTTP login +
-     `POST /api/v1/sessions/ingest`.
+   - HTTP login + `POST /api/v1/sessions/ingest` with the extract JSON body.
 
 4. **Report**
    - Success: `ltm-ingest: ok <uuid> context=<pct> in=<n> out=<n>`
@@ -84,4 +83,4 @@ $bin = if ($env:AGENT_BRAIN_DISPATCHER) { $env:AGENT_BRAIN_DISPATCHER } else { "
 1. **Never** skip ingest because the turn “looks small”.
 2. **Never** commit `.env` or paste passwords into the chat.
 3. **Never** rewrite `state.vscdb` — read-only extract only.
-4. **Never** use centralized-agent-data MCP/API for new ingests — use agent-brain.
+4. **Never** use centralized-agent-data for new ingests — use agent-brain.
