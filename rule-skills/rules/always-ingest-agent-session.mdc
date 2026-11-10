@@ -12,7 +12,7 @@ After every agent response (before ending the turn), run skill `ingest-agent-ses
 1. Resolve current composer/session UUID.
 2. Prefer `dispatcher-win\agent-brain-dispatcher.exe ingest --uuid <UUID>` (extract + API ingest).
 3. To refill all Sessions from `state.vscdb`: `agent-brain-dispatcher.exe sync`.
-4. Fallback: extract script + MCP `ingest_session` / HTTP POST.
+4. Fallback: extract script + HTTP `POST /api/v1/sessions/ingest`.
 5. Report one short ok/fail line.
 
 Do not skip. Do not wait for the user to ask.

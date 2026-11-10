@@ -2,8 +2,8 @@
 
 Cursor plugin: rules + skills for the **agent-brain** project.
 
-- Knowledge: `store_knowledge` / `search_knowledge`
-- Sessions: `ingest_session` / session list tools (SQLite); Windows `dispatcher-win` `sync` fills from `state.vscdb`
+- Knowledge: HTTP `POST /api/v1/knowledge` / `POST /api/v1/knowledge/search`
+- Sessions: Windows `dispatcher-win` `sync` / `ingest` fills from `state.vscdb`; MCP `list_sessions` to browse
 
 Install as a local Cursor plugin pointing at this folder, or copy rules/skills into a workspace that should use agent-brain.
 

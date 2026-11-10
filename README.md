@@ -10,8 +10,7 @@ Accessible locally at **http://127.0.0.1:5091** (WebUI) and **http://127.0.0.1:5
 |--------|------|
 | `api` | Gin API + SQLite + Qdrant |
 | `webui` | Vue + Tailwind — read-only Sessions browse + stats (Dark+) |
-| `mcp` | MCP stdio server (knowledge store/search via API) |
-| `mcp-prompt` | MCP stdio server — tool `send-human-prompt` → Prompts API |
+| `mcp` | MCP stdio server (`health_check`, `list_sessions` via API) |
 | `rule-skills` | Cursor plugin: rules + skills for store/search/ingest |
 | `dispatcher-win` | Windows CLI: extract `state.vscdb` → API ingest (`ingest` / `sync`) |
 | `scripts` | Windows Docker install (host ports 5090 / 5091) |
@@ -23,7 +22,7 @@ Accessible locally at **http://127.0.0.1:5091** (WebUI) and **http://127.0.0.1:5
 | **Knowledge** | SQLite `knowledge` + optional Qdrant | Durable knowledge kinds |
 | **Sessions** | SQLite `sessions` + `turns` | Cursor session context %, tokens, thinking, turns (filled by Windows dispatcher) |
 
-WebUI is **read-only** (session list/stats). Knowledge writes go through MCP/API. Session rows are filled by `dispatcher-win` from `%APPDATA%\Cursor\User\globalStorage\state.vscdb` (`sync` = all composers).
+WebUI is **read-only** (session list/stats). Knowledge writes go through the HTTP API. Session rows are filled by `dispatcher-win` from `%APPDATA%\Cursor\User\globalStorage\state.vscdb` (`sync` = all composers).
 
 Knowledge kinds: `general_knowledge`, `expertise`, `resolved_issues`, `task_guide`.
 
