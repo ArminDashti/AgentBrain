@@ -32,4 +32,29 @@ export function registerTools(server: McpServer, client: BrainClient): void {
       }
     },
   )
+
+  server.tool(
+    'store_human_prompt',
+    'Store a human prompt in agent-brain (prompts table).',
+    {
+      prompt: z.string().min(1).describe('Raw human prompt text'),
+      technically_revised: z.string().optional().describe('Technically revised prompt'),
+      english_revised: z.string().optional().describe('English-revised prompt'),
+      harness: z.string().optional().describe('Optional harness label'),
+    },
+    async ({ prompt, technically_revised, english_revised, harness }) => {
+      try {
+        return textResult(
+          await client.createPrompt({
+            prompt,
+            technically_revised,
+            english_revised,
+            harness,
+          }),
+        )
+      } catch (err) {
+        return errorResult(err)
+      }
+    },
+  )
 }

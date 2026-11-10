@@ -30,5 +30,6 @@ Cursor MCP example (API published on Docker host port 5090):
 
 - `health_check` — API health (SQLite)
 - `list_sessions` — list Sessions (`q?` name search); JWT via env login
+- `store_human_prompt` — store human prompt (`prompt` required; optional `technically_revised`, `english_revised`, `harness`)
 
 Knowledge store/search and session ingest use the HTTP API or `dispatcher-win`, not MCP tools.

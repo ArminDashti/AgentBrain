@@ -60,4 +60,21 @@ export class BrainClient {
     const qs = q ? `?q=${encodeURIComponent(q)}` : ''
     return this.authed(`/api/v1/sessions${qs}`)
   }
+
+  createPrompt(body: {
+    prompt: string
+    technically_revised?: string
+    english_revised?: string
+    harness?: string
+  }) {
+    return this.authed('/api/v1/prompts', {
+      method: 'POST',
+      body: JSON.stringify({
+        prompt: body.prompt,
+        technically_revised: body.technically_revised ?? '',
+        english_revised: body.english_revised ?? '',
+        harness: body.harness ?? '',
+      }),
+    }) as Promise<{ id: string }>
+  }
 }
