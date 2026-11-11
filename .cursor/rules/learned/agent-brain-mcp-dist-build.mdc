@@ -1,0 +1,22 @@
+---
+description: Fix Cursor agent-brain MCP when tool discovery fails because dist/index.js is missing. Use when user-agent-brain namespaceStatus is error or MCP won't start.
+---
+
+# AgentBrain MCP dist build
+
+**Goal:** Restore Cursor `agent-brain` MCP after clone or clean tree where `AgentBrain/dist` was never built.
+
+## Steps
+1. Confirm API: `http://127.0.0.1:5090/health` → `{"ok":true,...}`
+2. In `C:/Users/armin/GitHub/AgentBrain/AgentBrain`: `npm ci` then `npm run build` until `dist/index.js` exists
+3. Cursor config (`~/.cursor/mcp.json`) must point at that file with `AGENT_BRAIN_API_URL=http://127.0.0.1:5090` (and login env vars — values live in mcp.json / Armin env defaults, not here)
+4. Reconnect MCP: call `mcp_auth` on `user-agent-brain`, or toggle the server in Cursor MCP settings
+5. Prove: `health_check` → ok/sqlite; `tools/list` shows `health_check`, `list_sessions`, `store_human_prompt`
+
+## Gotchas
+- `dist/` is build output (not committed). Missing `node_modules` or unbuilt `tsc` = Cursor discovery error, not an API outage
+- README still shows an old path (`agent-brain/mcp/...`); real package dir is `AgentBrain/`
+
+## What didn't work
+- Re-auth / rediscover alone while `dist/index.js` is absent — process cannot start
+- Blaming API port when `/health` already returns 200

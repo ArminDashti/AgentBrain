@@ -27,6 +27,13 @@ async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
   if (token) headers.set('Authorization', `Bearer ${token}`)
   const res = await fetch(`${apiBase()}${path}`, { ...init, headers })
   if (!res.ok) {
+    if (res.status === 401 && !path.includes('/auth/login')) {
+      clearToken()
+      if (!window.location.pathname.startsWith('/login')) {
+        const redirect = encodeURIComponent(window.location.pathname + window.location.search)
+        window.location.assign(`/login?redirect=${redirect}`)
+      }
+    }
     const text = await res.text()
     throw new Error(text || res.statusText)
   }

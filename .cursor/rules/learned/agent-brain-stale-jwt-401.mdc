@@ -1,0 +1,21 @@
+---
+description: Diagnose AgentBrain WebUI showing {"error":"invalid token"} after API recreate or old localStorage JWT. Use when localhost:5091 pages show that JSON or 401 on /api/v1/*.
+---
+
+# AgentBrain stale JWT → invalid token
+
+**Goal:** Unblock WebUI when API returns `{"error":"invalid token"}` and the SPA used to leave the bad token in place.
+
+## Steps
+1. Confirm HTML still serves: `GET http://localhost:5091/` → 200 `text/html` (not the JSON). JSON comes from `/api/v1/*` via nginx `/api/` proxy.
+2. Logs: `401` on `/api/v1/stats|sessions|prompts` with body length ~25 = invalid Bearer in `localStorage` key `agent_brain_token`.
+3. Fix for user: Sign out / clear that key / Sign in as `armin` (password from Armin environment defaults). Prefer one origin: `localhost` ≠ `127.0.0.1` storage.
+4. Code path: `webui/src/lib/api.ts` `request()` clears token and `location.assign(/login?redirect=…)` on 401 (except `/auth/login`).
+
+## Gotchas
+- Router only checked `getToken()` presence; expired/wrong-secret JWTs still passed the guard and views rendered the raw API JSON as `error`.
+- Compose `JWT_SECRET` is fixed (`JWT_SECRET` in `scripts/docker-compose.yml`); recreate alone does not rotate the secret.
+
+## What didn't work
+- Treating root `/` as broken API — unauthenticated GET returns SPA HTML.
+- Blaming JWT_SECRET rotation on every `--force-recreate` — secret is compose-static.
