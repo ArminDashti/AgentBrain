@@ -653,6 +653,9 @@ func TestStats(t *testing.T) {
 	if byKind["expertise"].(float64) < 1 {
 		t.Errorf("expected at least 1 expertise item")
 	}
+	if _, ok := stats["avg_context_usage_percent"]; !ok {
+		t.Errorf("expected avg_context_usage_percent in stats response")
+	}
 }
 
 func TestUnauthorized(t *testing.T) {

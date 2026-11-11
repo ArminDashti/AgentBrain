@@ -2,10 +2,9 @@
 import { computed, onMounted, ref } from 'vue'
 import { RouterLink } from 'vue-router'
 import ContextMeter from '@/components/ContextMeter.vue'
-import { getStats, listSessions, type StatsResponse } from '@/lib/api'
+import { getStats, type StatsResponse } from '@/lib/api'
 
 const stats = ref<StatsResponse | null>(null)
-const avgContext = ref<number | null>(null)
 const error = ref('')
 const loading = ref(false)
 
@@ -15,13 +14,7 @@ async function load() {
   loading.value = true
   error.value = ''
   try {
-    const [s, sessions] = await Promise.all([getStats(), listSessions()])
-    stats.value = s
-    const values = sessions.sessions
-      .map((row) => row.context_usage_percent)
-      .filter((v): v is number => v != null && !Number.isNaN(v))
-    avgContext.value =
-      values.length === 0 ? null : values.reduce((a, b) => a + b, 0) / values.length
+    stats.value = await getStats()
   } catch (e) {
     error.value = e instanceof Error ? e.message : 'Load failed'
   } finally {
@@ -53,7 +46,7 @@ onMounted(load)
         </p>
         <div v-if="hasSessions" class="mt-6">
           <p class="mb-2 text-sm text-muted-foreground">Average context fill</p>
-          <ContextMeter :percent="avgContext" size="lg" />
+          <ContextMeter :percent="stats.avg_context_usage_percent" size="lg" />
         </div>
         <p class="mt-4 text-sm font-medium text-primary">Browse sessions</p>
       </RouterLink>
