@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
+import SessionTabs from '@/components/SessionTabs.vue'
 import { fmtNum, getSessionTurns } from '@/lib/api'
 
 const route = useRoute()
@@ -20,33 +21,42 @@ onMounted(async () => {
 
 <template>
   <div>
-    <h1 class="text-2xl font-semibold">Turns</h1>
-    <p v-if="error" class="mt-4 text-red-400">{{ error }}</p>
-    <div v-else class="mt-6 space-y-3">
-      <article
-        v-for="t in items"
-        :key="String(t.bubble_id)"
-        class="rounded-lg border border-border bg-card p-4 text-sm"
-      >
+    <div>
+      <h1 class="page-title">Turns</h1>
+      <p class="page-lede">Conversation and tool turns for this session.</p>
+    </div>
+
+    <SessionTabs :uuid="uuid" />
+
+    <p v-if="error" class="mt-6 text-danger">{{ error }}</p>
+
+    <div v-else class="mt-6 max-w-3xl space-y-4">
+      <article v-for="t in items" :key="String(t.bubble_id)" class="read-block text-sm">
         <div class="flex flex-wrap gap-3 text-xs text-muted-foreground">
-          <span class="rounded bg-muted px-2 py-0.5 text-foreground">{{ t.turn_type }}</span>
+          <span class="rounded bg-muted px-2 py-0.5 font-medium text-foreground">{{
+            t.turn_type
+          }}</span>
           <span v-if="t.tool_name">tool: {{ t.tool_name }}</span>
           <span v-if="t.mcp_name">mcp: {{ t.mcp_name }}</span>
-          <span>
+          <span class="font-mono">
             in/out {{ fmtNum(t.input_tokens as number | null) }}/{{
               fmtNum(t.output_tokens as number | null)
             }}
           </span>
-          <span v-if="t.duration_ms != null">{{ fmtNum(t.duration_ms as number | null) }} ms</span>
+          <span v-if="t.duration_ms != null" class="font-mono">
+            {{ fmtNum(t.duration_ms as number | null) }} ms
+          </span>
         </div>
-        <pre v-if="t.text" class="mt-2 max-h-48 overflow-auto whitespace-pre-wrap">{{ t.text }}</pre>
+        <pre v-if="t.text" class="mt-3 max-h-56 overflow-auto">{{ t.text }}</pre>
         <pre
           v-if="t.has_thinking && t.thinking_text"
-          class="mt-2 whitespace-pre-wrap border-t border-border pt-2 text-muted-foreground"
+          class="mt-3 border-t border-border pt-3 text-muted-foreground"
           >{{ t.thinking_text }}</pre
         >
       </article>
-      <p v-if="items.length === 0" class="text-muted-foreground">No turns.</p>
+      <p v-if="items.length === 0" class="empty-hint rounded-md border border-border bg-card">
+        No turns.
+      </p>
     </div>
   </div>
 </template>

@@ -1,6 +1,6 @@
 # agent-brain WebUI
 
-Vue 3 + Vite + Tailwind — **read-only** browse and stats (VS Code Dark+).
+Vue 3 + Vite + Tailwind — **read-only** browse and stats (Ink Archive).
 
 Writes are not available here; use MCP/API.
 

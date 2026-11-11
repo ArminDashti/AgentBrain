@@ -2,23 +2,185 @@
 @tailwind components;
 @tailwind utilities;
 
-/* VS Code Dark+ */
+/* Ink Archive */
 :root {
-  --background: #1e1e1e;
-  --foreground: #d4d4d4;
-  --card: #252526;
-  --primary: #007acc;
-  --primary-foreground: #ffffff;
-  --muted: #2d2d2d;
-  --muted-foreground: #cccccc;
-  --border: #3c3c3c;
+  --background: #e6ecf1;
+  --foreground: #15202b;
+  --card: #f3f6f9;
+  --primary: #0b7f74;
+  --primary-foreground: #f3f6f9;
+  --muted: #d5dee7;
+  --muted-foreground: #4a5b6a;
+  --border: #c5d0db;
+  --danger: #b42318;
+  --success: #0b7f74;
   --radius: 0.375rem;
-  --font-sans: 'Segoe UI', 'Cascadia Code', Consolas, ui-sans-serif, system-ui, sans-serif;
+  --font-display: 'Fraunces', Georgia, 'Times New Roman', serif;
+  --font-sans: 'Figtree', 'Segoe UI', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, 'Cascadia Code', Consolas, monospace;
 }
 
-body {
-  @apply min-h-screen antialiased;
-  background-color: var(--background);
-  color: var(--foreground);
-  font-family: var(--font-sans);
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply min-h-screen antialiased;
+    background-color: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-sans);
+    background-image:
+      radial-gradient(ellipse 120% 80% at 0% 0%, rgba(11, 127, 116, 0.07), transparent 55%),
+      radial-gradient(ellipse 90% 60% at 100% 100%, rgba(21, 32, 43, 0.05), transparent 50%),
+      linear-gradient(180deg, #e6ecf1 0%, #dde5ec 100%);
+    background-attachment: fixed;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+  }
+}
+
+@layer components {
+  .page-enter {
+    animation: page-enter 280ms ease-out both;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .page-enter {
+      animation: none;
+    }
+  }
+
+  .page-title {
+    font-family: var(--font-display);
+    font-weight: 550;
+    font-size: 1.75rem;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+    color: var(--foreground);
+  }
+
+  .page-lede {
+    @apply mt-1 text-sm;
+    color: var(--muted-foreground);
+    max-width: 42rem;
+  }
+
+  .btn-primary {
+    @apply inline-flex items-center justify-center rounded-md px-3 py-2 text-sm font-medium transition-colors disabled:opacity-50;
+    background-color: var(--primary);
+    color: var(--primary-foreground);
+  }
+
+  .btn-primary:hover:not(:disabled) {
+    filter: brightness(0.94);
+  }
+
+  .field-input {
+    @apply w-full rounded-md border px-3 py-2 text-sm;
+    border-color: var(--border);
+    background-color: var(--card);
+    color: var(--foreground);
+  }
+
+  .field-input::placeholder {
+    color: var(--muted-foreground);
+  }
+
+  .data-table {
+    @apply min-w-full text-left text-sm;
+  }
+
+  .data-table thead {
+    background-color: var(--muted);
+    color: var(--muted-foreground);
+  }
+
+  .data-table th {
+    @apply px-3 py-2.5 font-medium;
+  }
+
+  .data-table td {
+    @apply px-3 py-2.5;
+  }
+
+  .data-table tbody tr {
+    border-top: 1px solid var(--border);
+  }
+
+  .data-table tbody tr:hover {
+    background-color: rgba(213, 222, 231, 0.45);
+  }
+
+  .table-shell {
+    @apply overflow-x-auto rounded-md border;
+    border-color: var(--border);
+    background-color: var(--card);
+  }
+
+  .empty-hint {
+    @apply px-3 py-10 text-center text-sm;
+    color: var(--muted-foreground);
+  }
+
+  .text-danger {
+    color: var(--danger);
+  }
+
+  .text-success {
+    color: var(--success);
+  }
+
+  .session-tabs {
+    @apply mt-4 flex flex-wrap gap-1 border-b;
+    border-color: var(--border);
+  }
+
+  .session-tab {
+    @apply -mb-px border-b-2 border-transparent px-3 py-2 text-sm transition-colors;
+    color: var(--muted-foreground);
+  }
+
+  .session-tab:hover {
+    color: var(--foreground);
+  }
+
+  .session-tab-active {
+    border-color: var(--primary);
+    color: var(--foreground);
+    font-weight: 600;
+  }
+
+  .read-block {
+    @apply rounded-md border p-4;
+    border-color: var(--border);
+    background-color: var(--card);
+  }
+
+  .read-block pre {
+    font-family: var(--font-mono);
+    @apply whitespace-pre-wrap text-sm leading-relaxed;
+  }
+
+  .nav-link:hover {
+    background-color: color-mix(in srgb, var(--muted) 60%, transparent);
+  }
+
+  .nav-link-active {
+    background-color: color-mix(in srgb, var(--primary) 12%, transparent);
+  }
+}
+
+@keyframes page-enter {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }

@@ -69,48 +69,45 @@ onMounted(load)
   <div>
     <div class="flex flex-wrap items-end gap-3">
       <div>
-        <h1 class="text-2xl font-semibold">Prompts</h1>
-        <p class="text-sm text-muted-foreground">Raw prompts and revised variants</p>
+        <h1 class="page-title">Prompts</h1>
+        <p class="page-lede">Raw prompts and revised variants.</p>
       </div>
-      <button
-        type="button"
-        class="ml-auto rounded-md bg-primary px-3 py-2 text-sm text-primary-foreground disabled:opacity-50"
-        :disabled="creating"
-        @click="addPrompt"
-      >
+      <button type="button" class="btn-primary ml-auto" :disabled="creating" @click="addPrompt">
         {{ creating ? 'Creating…' : 'New prompt' }}
       </button>
     </div>
-    <p v-if="error" class="mt-4 text-sm text-red-400">{{ error }}</p>
+
+    <p v-if="error" class="mt-4 text-sm text-danger">{{ error }}</p>
     <p v-else-if="loading" class="mt-4 text-sm text-muted-foreground">Loading…</p>
-    <div v-else class="mt-6 overflow-x-auto rounded-lg border border-border">
-      <table class="min-w-full text-left text-sm">
-        <thead class="bg-muted/40 text-muted-foreground">
+
+    <div v-else class="table-shell mt-6">
+      <table class="data-table">
+        <thead>
           <tr>
-            <th class="px-3 py-2 font-medium">Prompt</th>
-            <th class="px-3 py-2 font-medium">Technically revised</th>
-            <th class="px-3 py-2 font-medium">English revised</th>
-            <th class="px-3 py-2 font-medium">Harness</th>
-            <th class="px-3 py-2 font-medium">DateTime</th>
-            <th class="px-3 py-2 font-medium w-20">Delete</th>
+            <th>Prompt</th>
+            <th>Technically revised</th>
+            <th>English revised</th>
+            <th>Harness</th>
+            <th>DateTime</th>
+            <th class="w-20">Delete</th>
           </tr>
         </thead>
         <tbody>
           <tr
             v-for="p in prompts"
             :key="p.id"
-            class="cursor-pointer border-t border-border hover:bg-muted/20"
+            class="cursor-pointer"
             @click="openPrompt(p.id)"
           >
-            <td class="max-w-xs px-3 py-2">{{ clipPromptCell(p.prompt) }}</td>
-            <td class="max-w-xs px-3 py-2">{{ clipPromptCell(p.technically_revised) }}</td>
-            <td class="max-w-xs px-3 py-2">{{ clipPromptCell(p.english_revised) }}</td>
-            <td class="px-3 py-2">{{ p.harness || '—' }}</td>
-            <td class="whitespace-nowrap px-3 py-2">{{ fmtDateTime(p.updated_at) }}</td>
-            <td class="px-3 py-2">
+            <td class="max-w-xs">{{ clipPromptCell(p.prompt) }}</td>
+            <td class="max-w-xs">{{ clipPromptCell(p.technically_revised) }}</td>
+            <td class="max-w-xs">{{ clipPromptCell(p.english_revised) }}</td>
+            <td>{{ p.harness || '—' }}</td>
+            <td class="whitespace-nowrap font-mono text-xs">{{ fmtDateTime(p.updated_at) }}</td>
+            <td>
               <button
                 type="button"
-                class="text-red-400 hover:text-red-300"
+                class="text-danger hover:underline"
                 @click="onDelete($event, p.id)"
               >
                 Delete
@@ -118,9 +115,7 @@ onMounted(load)
             </td>
           </tr>
           <tr v-if="prompts.length === 0">
-            <td colspan="6" class="px-3 py-8 text-center text-muted-foreground">
-              No prompts yet. Click New prompt to add one.
-            </td>
+            <td colspan="6" class="empty-hint">No prompts yet. Click New prompt to add one.</td>
           </tr>
         </tbody>
       </table>
