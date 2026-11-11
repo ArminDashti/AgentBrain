@@ -26,26 +26,46 @@ async function onSubmit() {
 </script>
 
 <template>
-  <div class="mx-auto mt-16 max-w-md rounded-lg border border-border bg-card p-6">
-    <h1 class="text-xl font-semibold">Sign in</h1>
-    <p class="mt-1 text-sm text-muted-foreground">Agent Brain knowledge store</p>
-    <form class="mt-6 space-y-4" @submit.prevent="onSubmit">
-      <label class="block text-sm">
-        <span class="text-muted-foreground">Username</span>
-        <input v-model="username" class="mt-1 w-full rounded-md border border-border bg-background px-3 py-2" />
-      </label>
-      <label class="block text-sm">
-        <span class="text-muted-foreground">Password</span>
-        <input v-model="password" type="password" class="mt-1 w-full rounded-md border border-border bg-background px-3 py-2" />
-      </label>
-      <p v-if="error" class="text-sm text-red-400">{{ error }}</p>
-      <button
-        class="w-full rounded-md bg-primary px-3 py-2 text-sm font-medium text-primary-foreground disabled:opacity-60"
-        :disabled="loading"
-        type="submit"
-      >
-        {{ loading ? 'Signing in…' : 'Sign in' }}
-      </button>
-    </form>
+  <div class="relative flex min-h-screen flex-col justify-center px-6 py-12">
+    <div
+      class="pointer-events-none absolute inset-0 opacity-40"
+      aria-hidden="true"
+      style="
+        background-image:
+          linear-gradient(var(--border) 1px, transparent 1px),
+          linear-gradient(90deg, var(--border) 1px, transparent 1px);
+        background-size: 48px 48px;
+        mask-image: radial-gradient(ellipse 70% 60% at 50% 40%, black, transparent);
+      "
+    />
+
+    <div class="page-enter relative mx-auto w-full max-w-md">
+      <p class="font-display text-4xl font-semibold tracking-tight text-foreground sm:text-5xl">
+        Agent Brain
+      </p>
+      <p class="page-lede mt-3 text-base">
+        Local vault for agent sessions, context pressure, and prompt revisions.
+      </p>
+
+      <form class="mt-10 space-y-4" @submit.prevent="onSubmit">
+        <label class="block text-sm">
+          <span class="text-muted-foreground">Username</span>
+          <input v-model="username" class="field-input mt-1" autocomplete="username" />
+        </label>
+        <label class="block text-sm">
+          <span class="text-muted-foreground">Password</span>
+          <input
+            v-model="password"
+            type="password"
+            class="field-input mt-1"
+            autocomplete="current-password"
+          />
+        </label>
+        <p v-if="error" class="text-sm text-danger">{{ error }}</p>
+        <button class="btn-primary w-full" :disabled="loading" type="submit">
+          {{ loading ? 'Signing in…' : 'Sign in' }}
+        </button>
+      </form>
+    </div>
   </div>
 </template>

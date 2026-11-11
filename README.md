@@ -9,7 +9,7 @@ Accessible locally at **http://127.0.0.1:5091** (WebUI) and **http://127.0.0.1:5
 | Folder | Role |
 |--------|------|
 | `api` | Gin API + SQLite |
-| `webui` | Vue + Tailwind — read-only Sessions browse + stats (Dark+) |
+| `webui` | Vue + Tailwind — read-only Sessions browse + stats (Ink Archive) |
 | `mcp` | MCP stdio server (`health_check`, `list_sessions` via API) |
 | `rule-skills` | Cursor plugin: rules + skills for store/search/ingest |
 | `dispatcher-win` | Windows CLI: extract `state.vscdb` → API ingest (`ingest` / `sync`) |

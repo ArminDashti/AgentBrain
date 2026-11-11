@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
-import { fmtNum, fmtPct, getSession, type SessionSummary } from '@/lib/api'
+import ContextMeter from '@/components/ContextMeter.vue'
+import SessionTabs from '@/components/SessionTabs.vue'
+import { fmtNum, getSession, type SessionSummary } from '@/lib/api'
 
 const route = useRoute()
 const uuid = computed(() => route.params.uuid as string)
@@ -18,63 +20,64 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div v-if="error" class="text-red-400">{{ error }}</div>
+  <div v-if="error" class="text-danger">{{ error }}</div>
   <div v-else-if="!session" class="text-muted-foreground">Loading…</div>
   <div v-else>
     <div>
-      <h1 class="text-2xl font-semibold">{{ session.name || session.uuid }}</h1>
-      <p class="text-sm text-muted-foreground">{{ session.subtitle }}</p>
+      <h1 class="page-title">{{ session.name || session.uuid }}</h1>
+      <p class="page-lede">{{ session.subtitle }}</p>
     </div>
 
-    <div class="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-      <div class="rounded-lg border border-border bg-card p-4">
-        <div class="text-xs uppercase tracking-wide text-muted-foreground">Context</div>
-        <div class="mt-2 text-2xl font-semibold">{{ fmtPct(session.context_usage_percent) }}</div>
+    <SessionTabs :uuid="uuid" />
+
+    <section class="mt-8 max-w-2xl">
+      <p class="text-sm text-muted-foreground">Context fill</p>
+      <div class="mt-3">
+        <ContextMeter :percent="session.context_usage_percent" size="lg" />
       </div>
-      <div class="rounded-lg border border-border bg-card p-4">
-        <div class="text-xs uppercase tracking-wide text-muted-foreground">Input tokens</div>
-        <div class="mt-2 text-2xl font-semibold">{{ fmtNum(session.input_tokens) }}</div>
+    </section>
+
+    <dl class="mt-8 grid max-w-3xl gap-x-8 gap-y-4 text-sm sm:grid-cols-2">
+      <div>
+        <dt class="text-muted-foreground">Input tokens</dt>
+        <dd class="mt-0.5 font-mono">{{ fmtNum(session.input_tokens) }}</dd>
       </div>
-      <div class="rounded-lg border border-border bg-card p-4">
-        <div class="text-xs uppercase tracking-wide text-muted-foreground">Output tokens</div>
-        <div class="mt-2 text-2xl font-semibold">{{ fmtNum(session.output_tokens) }}</div>
+      <div>
+        <dt class="text-muted-foreground">Output tokens</dt>
+        <dd class="mt-0.5 font-mono">{{ fmtNum(session.output_tokens) }}</dd>
       </div>
-      <div class="rounded-lg border border-border bg-card p-4">
-        <div class="text-xs uppercase tracking-wide text-muted-foreground">Cache R/W</div>
-        <div class="mt-2 text-2xl font-semibold">
+      <div>
+        <dt class="text-muted-foreground">Cache read / write</dt>
+        <dd class="mt-0.5 font-mono">
           {{ fmtNum(session.cache_read_tokens) }} / {{ fmtNum(session.cache_write_tokens) }}
-        </div>
+        </dd>
       </div>
-    </div>
-
-    <div class="mt-6 rounded-lg border border-border bg-card p-4 text-sm">
-      <h2 class="font-medium">Useful info</h2>
-      <dl class="mt-3 grid gap-2 sm:grid-cols-2">
-        <div>
-          <dt class="text-muted-foreground">Mode</dt>
-          <dd>{{ session.unified_mode || '—' }}</dd>
-        </div>
-        <div>
-          <dt class="text-muted-foreground">Status</dt>
-          <dd>{{ session.status || '—' }}</dd>
-        </div>
-        <div>
-          <dt class="text-muted-foreground">Workspace</dt>
-          <dd class="break-all">{{ session.workspace_path || session.workspace_id || '—' }}</dd>
-        </div>
-        <div>
-          <dt class="text-muted-foreground">Turns / thinking</dt>
-          <dd>{{ session.turn_count ?? 0 }} / {{ session.thinking_count ?? 0 }}</dd>
-        </div>
-        <div>
-          <dt class="text-muted-foreground">Lines +/-</dt>
-          <dd>+{{ session.total_lines_added }} / -{{ session.total_lines_removed }}</dd>
-        </div>
-        <div>
-          <dt class="text-muted-foreground">Files changed</dt>
-          <dd>{{ session.files_changed_count }}</dd>
-        </div>
-      </dl>
-    </div>
+      <div>
+        <dt class="text-muted-foreground">Mode</dt>
+        <dd class="mt-0.5">{{ session.unified_mode || '—' }}</dd>
+      </div>
+      <div>
+        <dt class="text-muted-foreground">Status</dt>
+        <dd class="mt-0.5">{{ session.status || '—' }}</dd>
+      </div>
+      <div>
+        <dt class="text-muted-foreground">Workspace</dt>
+        <dd class="mt-0.5 break-all">{{ session.workspace_path || session.workspace_id || '—' }}</dd>
+      </div>
+      <div>
+        <dt class="text-muted-foreground">Turns / thinking</dt>
+        <dd class="mt-0.5">{{ session.turn_count ?? 0 }} / {{ session.thinking_count ?? 0 }}</dd>
+      </div>
+      <div>
+        <dt class="text-muted-foreground">Lines + / −</dt>
+        <dd class="mt-0.5 font-mono">
+          +{{ session.total_lines_added }} / −{{ session.total_lines_removed }}
+        </dd>
+      </div>
+      <div>
+        <dt class="text-muted-foreground">Files changed</dt>
+        <dd class="mt-0.5">{{ session.files_changed_count }}</dd>
+      </div>
+    </dl>
   </div>
 </template>

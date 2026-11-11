@@ -175,10 +175,11 @@ func (s *Service) Search(ctx context.Context, query, kind string, mode SearchMod
 }
 
 type Stats struct {
-	TotalKnowledge  int            `json:"total_knowledge"`
-	ByKind          map[string]int `json:"by_kind"`
-	SessionCount    int            `json:"session_count"`
-	RecentKnowledge []Item         `json:"recent_knowledge"`
+	TotalKnowledge         int            `json:"total_knowledge"`
+	ByKind                 map[string]int `json:"by_kind"`
+	SessionCount           int            `json:"session_count"`
+	AvgContextUsagePercent *float64       `json:"avg_context_usage_percent"`
+	RecentKnowledge        []Item         `json:"recent_knowledge"`
 }
 
 func (s *Service) Stats(ctx context.Context) (*Stats, error) {
@@ -207,6 +208,16 @@ func (s *Service) Stats(ctx context.Context) (*Stats, error) {
 	}
 	if err := s.DB.QueryRowContext(ctx, `SELECT COUNT(*) FROM sessions`).Scan(&st.SessionCount); err != nil {
 		return nil, err
+	}
+	var avg sql.NullFloat64
+	if err := s.DB.QueryRowContext(ctx, `
+		SELECT AVG(context_usage_percent) FROM sessions WHERE context_usage_percent IS NOT NULL
+	`).Scan(&avg); err != nil {
+		return nil, err
+	}
+	if avg.Valid {
+		v := avg.Float64
+		st.AvgContextUsagePercent = &v
 	}
 	recent, err := s.List(ctx, "", "", 8)
 	if err != nil {

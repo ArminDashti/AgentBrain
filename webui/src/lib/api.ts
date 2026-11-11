@@ -2,6 +2,7 @@ const TOKEN_KEY = 'agent_brain_token'
 
 export type StatsResponse = {
   session_count: number
+  avg_context_usage_percent: number | null
 }
 
 function apiBase(): string {
@@ -52,11 +53,18 @@ export async function login(username: string, password: string) {
 export async function getStats() {
   const raw = await request<{
     session_count: number
+    avg_context_usage_percent?: number | null
     total_knowledge?: number
     by_kind?: Record<string, number>
     recent_knowledge?: unknown[]
   }>('/api/v1/stats')
-  return { session_count: raw.session_count } satisfies StatsResponse
+  return {
+    session_count: raw.session_count,
+    avg_context_usage_percent:
+      raw.avg_context_usage_percent == null || Number.isNaN(raw.avg_context_usage_percent)
+        ? null
+        : raw.avg_context_usage_percent,
+  } satisfies StatsResponse
 }
 
 export type SessionSummary = {
