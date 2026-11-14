@@ -39,9 +39,10 @@ Default login: `armin` / `dopadopa123`
 
 ## Cloud Agent (Linux VM)
 
-Docker is not available on the default Cloud Agent image. From the repo root:
+Docker is not available on the default Cloud Agent image. The image Go is too old for this repo (`run-local-dev.sh` sets `GOTOOLCHAIN=local`, so it will not download a newer toolchain). From the repo root, install first, then start:
 
 ```bash
+./scripts/cloud-agent-install.sh
 ./scripts/run-local-dev.sh
 ```
 

@@ -89,6 +89,6 @@ unverified) or skip it. This keeps confident guesses out.
 - `go test ./...` in `api` fails: `internal/http` tests import removed packages `internal/embed` and `internal/qdrant`. `go build -o /tmp/agent-brain-api ./cmd/server` and `go test ./internal/timefmt` pass. `dispatcher-win` has no tests. `npm run build` in `webui` passes.
 
 **What didn't work.**
-- System Go 1.22.2 (`/usr/bin/go`) cannot compile `api` (`go 1.25.0`) or `dispatcher-win` (`go 1.26.6`).
+- System Go 1.22.2 (`/usr/bin/go`) cannot compile `api` (`go 1.25.0`) or `dispatcher-win` (`go 1.26.6`). `./scripts/run-local-dev.sh` sets `GOTOOLCHAIN=local`, so it will not fetch a newer toolchain. Run `./scripts/cloud-agent-install.sh` first; the dev script now exits immediately when `go version` is older than 1.25.
 - `./scripts/run-local-dev.sh` before 2026-11-14 exited immediately: `cp mcp-prompt/.env.example` failed because that directory is `AgentBrain`.
 - Checking health on **5090** / **5091** after copying `.env.example` never becomes ready: those files set `ADDR=:8220` and `VITE_DEV_PORT=5220`.

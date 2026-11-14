@@ -14,6 +14,13 @@ fi
 export GOTOOLCHAIN=local CGO_ENABLED=0
 export PATH="/usr/local/go/bin:${PATH:-}"
 
+# GOTOOLCHAIN=local will not download a newer toolchain. The default image
+# ships Go 1.22, which cannot compile api (go 1.25) or dispatcher-win (go 1.26).
+if ! go version 2>/dev/null | grep -Eq 'go1\.(2[5-9]|[3-9][0-9])'; then
+  echo "Go 1.25 or newer is required. From the repo root run: ./scripts/cloud-agent-install.sh" >&2
+  exit 1
+fi
+
 for d in api webui AgentBrain; do
   if [[ -f "$ROOT/$d/.env.example" && ! -f "$ROOT/$d/.env" ]]; then
     cp "$ROOT/$d/.env.example" "$ROOT/$d/.env"
