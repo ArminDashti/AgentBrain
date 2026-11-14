@@ -71,17 +71,24 @@ unverified) or skip it. This keeps confident guesses out.
      Format: ### YYYY-MM-DD — <title>  /  **Goal**, **Steps**, **Gotchas**,
      **What didn't work**. Keep secrets out — point to where they live. -->
 
-### 2026-11-09 — Cloud Agent dev stack (SQLite only)
+### 2026-11-14 — Cloud Agent dev stack (SQLite, ports from .env)
 
-**Goal.** On a fresh Cloud Agent VM, run the API and Vite WebUI so an agent can log in, write a prompt, and store knowledge in SQLite.
+**Goal.** On a fresh Cloud Agent VM, run the API and Vite WebUI so an agent can log in and store a prompt or knowledge row in SQLite.
 
 **Steps.**
-- The default image Go is too old. Install Go **1.26.10** (satisfies `dispatcher-win/go.mod` `go 1.26.6` and `api/go.mod` `go 1.25.0`) to `/usr/local/go` and symlink `go` and `gofmt` into `/usr/local/bin`. Use `GOTOOLCHAIN=local` and `CGO_ENABLED=0`. `modernc.org/sqlite` builds without cgo.
-- If `.env` is missing, copy `.env.example` in `api`, `webui`, and `mcp-prompt`. Do not overwrite an edited `.env`.
-- `go mod download` in `api` and `dispatcher-win`. `npm ci` in `webui`, `AgentBrain`, and `mcp-prompt`, then `npm run build` in the MCP packages. Node 22 is already on the login-shell `PATH`.
-- From repo root: `./scripts/run-local-dev.sh` (tmux sessions `api` + `webui` on ports **5090** / **5091**), or start manually with `SQLITE_PATH=$HOME/.local/share/agent-brain/sqlite/agent_brain.db` under `api/`.
-- Wait until `http://127.0.0.1:5090/health` is HTTP 200 and `"ok": true`.
+- Install Go **1.26.10** to `/usr/local/go` and symlink `go` and `gofmt` into `/usr/local/bin` (`scripts/cloud-agent-install.sh`). Use `GOTOOLCHAIN=local` and `CGO_ENABLED=0`. `modernc.org/sqlite` builds without cgo. Node 22 is already on the login-shell `PATH` (`bash -lc`).
+- `go mod download` in `api` and `dispatcher-win`. `npm ci` in `webui` and `AgentBrain`, then `npm run build` in `AgentBrain` (`dist/` is gitignored).
+- If `.env` is missing, copy `.env.example` in `api`, `webui`, and `AgentBrain`. Do not overwrite an edited `.env`.
+- From repo root: `./scripts/run-local-dev.sh`. It reads `ADDR` and `VITE_DEV_PORT` from those env files. The examples bind API **http://127.0.0.1:8220** and WebUI **http://127.0.0.1:5220**.
+- Wait until `http://127.0.0.1:8220/health` is HTTP 200 and `"ok": true`, and the WebUI returns a non-error HTTP status. The Vite server proxies `/api` and `/health` to the API.
 - Login credentials are the API seed in `api/internal/db` (`DefaultUsername`, `DefaultPassword`). Do not copy the password into this file.
 
 **Gotchas.**
-- Root README ports **5090** / **5091** match `scripts/run-local-dev.sh` and the Windows Docker compose stack.
+- Docker host ports **5090** (API) and **5091** (WebUI) come from `scripts/docker-compose.yml` only. They are not the Vite/Gin dev ports.
+- `config.LoadDotEnv` does not override variables already set in the process. `set -a; . ./.env` does overwrite earlier shell exports.
+- `go test ./...` in `api` fails: `internal/http` tests import removed packages `internal/embed` and `internal/qdrant`. `go build -o /tmp/agent-brain-api ./cmd/server` and `go test ./internal/timefmt` pass. `dispatcher-win` has no tests. `npm run build` in `webui` passes.
+
+**What didn't work.**
+- System Go 1.22.2 (`/usr/bin/go`) cannot compile `api` (`go 1.25.0`) or `dispatcher-win` (`go 1.26.6`). `./scripts/run-local-dev.sh` sets `GOTOOLCHAIN=local`, so it will not fetch a newer toolchain. Run `./scripts/cloud-agent-install.sh` first; the dev script now exits immediately when `go version` is older than 1.25.
+- `./scripts/run-local-dev.sh` before 2026-11-14 exited immediately: `cp mcp-prompt/.env.example` failed because that directory is `AgentBrain`.
+- Checking health on **5090** / **5091** after copying `.env.example` never becomes ready: those files set `ADDR=:8220` and `VITE_DEV_PORT=5220`.

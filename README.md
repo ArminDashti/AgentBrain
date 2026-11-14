@@ -39,19 +39,21 @@ Default login: `armin` / `dopadopa123`
 
 ## Cloud Agent (Linux VM)
 
-Docker is not available on the default Cloud Agent image. From the repo root:
+Docker is not available on the default Cloud Agent image. The image Go is too old for this repo (`run-local-dev.sh` sets `GOTOOLCHAIN=local`, so it will not download a newer toolchain). From the repo root, install first, then start:
 
 ```bash
+./scripts/cloud-agent-install.sh
 ./scripts/run-local-dev.sh
 ```
 
-- WebUI: **http://127.0.0.1:5091** (same ports as Windows Docker)
-- API: **http://127.0.0.1:5090**
+Dev servers follow `api/.env` and `webui/.env` (copied from the examples on first run):
+
+- WebUI: **http://127.0.0.1:5220** (Vite proxies `/api` to the API)
+- API: **http://127.0.0.1:8220**
+
+Windows Docker still publishes those apps on host ports **5090** (API) and **5091** (WebUI).
 
 That URL is on the **agent VM**. In Cursor, open it from the agent environment (browser preview / forwarded port), not `localhost` in your own browser unless a port is forwarded to your machine.
-
-- WebUI: `http://127.0.0.1:5091` (proxies `/api` to the API container)
-- API: `http://127.0.0.1:5090`
 
 Fresh SQLite on first install. Use `.\reinstall-win-local-docker.ps1` to wipe volumes.
 
