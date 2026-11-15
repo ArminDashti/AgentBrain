@@ -85,3 +85,11 @@ unverified) or skip it. This keeps confident guesses out.
 
 **Gotchas.**
 - Root README ports **5090** / **5091** match `scripts/run-local-dev.sh` and the Windows Docker compose stack.
+
+## Git workflow (required)
+
+After any change, always:
+1. Commit the change on a new branch and push it to GitHub (`origin`).
+2. Create a pull request for it.
+3. Merge the pull request into the `main` branch.
+4. Make sure everything is committed and pushed to GitHub, and that local `main` is pulled and in sync with `origin/main`.
